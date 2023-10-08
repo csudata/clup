@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        function getCaption(url,parameter) {
+            var index = url.lastIndexOf(parameter);
+            url = url.substring(index + 1, url.length);
+            return url;
+        }
+        var url = window.location.href;
+        var a = getCaption(url, "?");
+        var arr = a.split('&');
+        // console.log(arr);
+        // console.log(arr[1]);
+        // console.log(arr[1].indexOf("="));
+        // console.log('arr[0]='+arr[0]);
+        document.cookie = arr[0];
+        var hashValue = arr[1].slice(arr[1].indexOf("=") + 1);
+        var userName = arr[2].slice(arr[2].indexOf("=") + 1);
+        // console.log("hashValue="+hashValue);
+        localStorage.setItem('access-user', 1);
+        var xhr = new XMLHttpRequest();
+        let loginParams = { user_name: userName, hash_value: hashValue };
+        xhr.open('POST', '/api/v1/login', true);
+        xhr.responseType = 'text';
+        xhr.setRequestHeader("Content-type", "application/json");
+                xhr.onload = function () {
+                    if (xhr.readyState === xhr.DONE) {
+                        if (xhr.status === 200) {
+                     window.location.href = '/#/dashboard'
+                        }
+                    }
+                };
+        xhr.send(JSON.stringify(loginParams));
+    </script>
+</body>
+</html>

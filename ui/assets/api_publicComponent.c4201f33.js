@@ -1,0 +1,1 @@
+import{P as t}from"./index.dfdb83b1.js";var s={getCbuTaskTypeList:s=>t("/api/v1/get_task_type_list_by_class",s),getCbuTaskList:s=>t("/api/v1/get_cbu_task_list",s),getTaskList:s=>t("/api/v1/get_general_task_list",s),getClusterList:s=>t("/api/v1/get_cluster_list",s)};export{s as A};

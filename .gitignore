@@ -1,0 +1,9 @@
+*.pyc
+target/*
+.idea/
+.DS_Store
+.vscode
+__pycache__
+logs/
+conf/clup.conf
+dist/

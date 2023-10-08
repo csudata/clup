@@ -1,0 +1,89 @@
+hml {
+	font-family: "Microsoft Yahei",sans-serif;;
+}
+
+body{
+	margin: 20px 5%;
+}
+
+h1{
+	text-align: center;
+}
+
+table,table tr th, table tr td { 
+	border:1px solid #aaa; 
+}
+
+table {
+	font-size: 14px;
+	width: 100%;
+	table-layout: fixed;
+	min-height: 25px; 
+	line-height: 25px; 
+	text-align: center; 
+	border-collapse: collapse;
+}
+
+td,th{
+	padding: 20px;
+	min-width: 90px;
+	word-break: normal;
+  	overflow-wrap: break-word;
+	/* 文本超出省略 */
+	/* white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis; */
+} 
+
+tr{
+	position: relative;
+}
+
+th{
+	background: #eee;
+}
+
+
+p{
+	text-indent: 2em;
+	line-height: 2em;
+}
+
+.code-example {
+	font-family: "Courier New", monospace;
+	background-color: #f4f4f4;
+	padding: 20px;
+	border-radius: 5px;
+	text-align: left !important;
+}
+
+.code-example code{
+	display: flex;
+	flex-direction: column;
+	row-gap: 5px;
+}
+
+.code-example pre{
+	margin: 0;
+}
+
+.error-message {
+	color: white;
+	padding: 20px;
+	border-radius: 5px;
+}
+
+.error-message p {
+	margin: 0;
+	color: orangered;
+}
+
+.warning-message {
+	padding: 20px;
+	border-radius: 5px;
+}
+
+.warning-message p {
+	margin: 0;
+	color: orange;
+}
