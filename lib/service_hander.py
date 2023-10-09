@@ -208,51 +208,6 @@ class ServiceHandle:
         return 0, total_count, task_list_data
 
     @staticmethod
-    def add_sr_cluster(pdict):
-        # modified by bee
-        cluster = copy.copy(pdict)
-
-        if 'cstlb_list' not in pdict:
-            cluster['cstlb_list'] = ''
-            cluster['read_vip_host'] = ''
-        else:
-            cstlb_list = pdict['cstlb_list'].split(',')
-            cluster['read_vip_host'] = cstlb_list[0].split(':')[0]
-
-        if 'read_vip' not in pdict:
-            cluster['read_vip'] = ''
-
-        cluster_type = 1
-        cluster['cluster_type'] = cluster_type
-        cluster['state'] = 0
-        cluster['lock_time'] = 0
-        cluster['db_list'] = []
-
-        repl_ip_list = pdict['repl_ip_list'].split(',')
-        db_ip_list = pdict['db_ip_list'].split(',')
-        if len(db_ip_list) != len(repl_ip_list):
-            return -1, "The IP list of replication stream needs to correspond one-to-one and have the same number as the IP list of the database."
-        db_id = 1
-        i = 0
-        for db_ip in db_ip_list:
-            db_dict = {'db_id': db_id, 'state': 1, 'pgdata': pdict['pgdata']}
-            if db_id == 1:
-                db_dict['is_primary'] = 1
-            else:
-                db_dict['is_primary'] = 0
-
-            db_dict['repl_app_name'] = db_ip
-            db_dict['host'] = db_ip.strip()
-            db_dict['repl_ip'] = repl_ip_list[i].strip()
-
-            cluster['db_list'].append(db_dict)
-            db_id += 1
-            i += 1
-
-        cluster_id = dao.add_cluster(cluster)
-        return 0, cluster_id
-
-    @staticmethod
     def remove_cluster(cluster_id):
         state = dao.get_cluster_state(cluster_id)
         if state is None:

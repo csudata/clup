@@ -99,46 +99,6 @@ def get_host_list(req):
     return 200, raw_data
 
 
-def get_host_for_agent_log(req):
-    params = {'page_num': csu_http.MANDATORY | csu_http.INT,
-              'page_size': csu_http.MANDATORY | csu_http.INT,
-              'cluster_id': 0,
-              'host': 0,
-              }
-    # 检查参数的合法性，如果成功，把参数放到一个字典中
-    err_code, pdict = csu_http.parse_parms(params, req)
-    if err_code != 0:
-        return 400, pdict
-    page_num = pdict['page_num']
-    page_size = pdict['page_size']
-    offset = (page_num - 1) * page_size
-    args = {}
-    where_cond = ''
-    if 'cluster_id' in pdict:
-        where_cond = 'WHERE cluster_id = %(cluster_id)s'
-        args['cluster_id'] = pdict['cluster_id']
-    if 'host' in pdict:
-        if where_cond != '':
-            where_cond = where_cond + " AND ip like %(host)s"
-            args['host'] = pdict['host']
-        else:
-            where_cond = "WHERE ip like %(host)s"
-            args['host'] = pdict['host']
-    with dbapi.DBProcess() as dbp:
-        sql = "SELECT count(*) as cnt FROM clup_host LEFT JOIN clup_db ON ip = host {}".format(where_cond)
-        rows = dbp.query(sql, args)
-        row_cnt = rows[0]['cnt']
-        ret_rows = []
-        if row_cnt > 0:
-            args['limit'] = page_size
-            args['offset'] = offset
-            sql = "SELECT db_id,cluster_id,up_db_id,ip as host,is_primary FROM clup_host LEFT JOIN clup_db ON ip = host {} ORDER BY ip LIMIT %(limit)s OFFSET %(offset)s".format(where_cond)
-            ret_rows = dbp.query(sql, args)
-    ret_data = {"total": row_cnt, "page_size": pdict['page_size'], "rows": ret_rows}
-    return 200, json.dumps(ret_data)
-
-
-
 def remove_host(req):
     params = {
         'ip': csu_http.MANDATORY,

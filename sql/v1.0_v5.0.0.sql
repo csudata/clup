@@ -76,7 +76,7 @@ $BODY$
 
 INSERT INTO clup_settings(key, content)
 with t(key, content) as(
-    VALUES('db_version', '3.6')
+    VALUES('db_version', '1.0')
 )
 SELECT * FROM t WHERE NOT EXISTS
     (SELECT 1 FROM clup_settings o
@@ -564,7 +564,6 @@ INSERT INTO csu_right (right_id, right_name, right_type, rw_type, right_data) VA
 INSERT INTO csu_right (right_id, right_name, right_type, rw_type, right_data) VALUES ('get_cluster_list_api', '获得PG集群信息列表（为工具）', 1, 0, NULL) ON CONFLICT DO NOTHING;
 INSERT INTO csu_right (right_id, right_name, right_type, rw_type, right_data) VALUES ('get_cluster_host_list', '获得指定PG集群（共享存储）主机列表', 1, 0, NULL) ON CONFLICT DO NOTHING;
 INSERT INTO csu_right (right_id, right_name, right_type, rw_type, right_data) VALUES ('create_sr_cluster', '创建流复制集群', 1, 1, NULL) ON CONFLICT DO NOTHING;
-INSERT INTO csu_right (right_id, right_name, right_type, rw_type, right_data) VALUES ('add_sr_cluster', '增加基于流复制的PG集群', 1, 1, NULL) ON CONFLICT DO NOTHING;
 INSERT INTO csu_right (right_id, right_name, right_type, rw_type, right_data) VALUES ('delete_cluster', '删除PG集群', 1, 1, NULL) ON CONFLICT DO NOTHING;
 INSERT INTO csu_right (right_id, right_name, right_type, rw_type, right_data) VALUES ('check_ha', '检查指定集群', 1, 1, NULL) ON CONFLICT DO NOTHING;
 INSERT INTO csu_right (right_id, right_name, right_type, rw_type, right_data) VALUES ('modify_sr_cluster_info', '修改流复的PG集群的信息', 1, 1, NULL) ON CONFLICT DO NOTHING;
@@ -623,8 +622,6 @@ INSERT INTO csu_right (right_id, right_name, right_type, rw_type, right_data) VA
 INSERT INTO csu_right (right_id, right_name, right_type, rw_type, right_data) VALUES ('do_terminate_basebackup', '终止任务中的pg_basebackup', 1, 1, NULL) ON CONFLICT DO NOTHING;
 INSERT INTO csu_right (right_id, right_name, right_type, rw_type, right_data) VALUES ('get_basebackup_log', '获得pg_basebackup任务的日志', 1, 0, NULL) ON CONFLICT DO NOTHING;
 INSERT INTO csu_right (right_id, right_name, right_type, rw_type, right_data) VALUES ('basic_test_api', '探测clup是否正常的接口', 1, 0, NULL) ON CONFLICT DO NOTHING;
-INSERT INTO csu_right (right_id, right_name, right_type, rw_type, right_data) VALUES ('get_agent_package_list', '获得agent升级包列表', 1, 0, NULL) ON CONFLICT DO NOTHING;
-INSERT INTO csu_right (right_id, right_name, right_type, rw_type, right_data) VALUES ('upgrade_agent', '升级agent', 1, 1, NULL) ON CONFLICT DO NOTHING;
 INSERT INTO csu_right (right_id, right_name, right_type, rw_type, right_data) VALUES ('remove_host', '移除指定IP的主机', 1, 1, NULL) ON CONFLICT DO NOTHING;
 
 
@@ -647,11 +644,6 @@ INSERT INTO csu_right (right_id, right_name, right_type, rw_type, right_data) VA
 INSERT INTO csu_right (right_id, right_name, right_type, rw_type, right_data) VALUES ('get_dbmgr_task_list', '数据库管理中获得任务日志的列表', 1, 0, NULL) ON CONFLICT DO NOTHING;
 INSERT INTO csu_right (right_id, right_name, right_type, rw_type, right_data) VALUES ('get_cbu_task_list', '备份管理中获得任务日志的列表', 1, 0, NULL) ON CONFLICT DO NOTHING;
 
-INSERT INTO csu_right (right_id, right_name, right_type, rw_type, right_data) VALUES ('cvault/check_path_is_dir', '检验路径是否是目录', 1, 0, NULL) ON CONFLICT DO NOTHING;
-INSERT INTO csu_right (right_id, right_name, right_type, rw_type, right_data) VALUES ('cvault/check_os_user_exists', '检查操作系统用户是否存在', 1, 0, NULL) ON CONFLICT DO NOTHING;
-INSERT INTO csu_right (right_id, right_name, right_type, rw_type, right_data) VALUES ('cvault/check_is_pg_bin_path', '检查目录是否是PG软件BIN目录', 1, 0, NULL) ON CONFLICT DO NOTHING;
-
-
 
 INSERT INTO csu_right (right_id, right_name, right_type, rw_type, right_data) VALUES ('check_path_is_dir', '检验路径是否是目录', 1, 0, NULL) ON CONFLICT DO NOTHING;
 INSERT INTO csu_right (right_id, right_name, right_type, rw_type, right_data) VALUES ('check_os_user_exists', '检查操作系统用户是否存在', 1, 0, NULL) ON CONFLICT DO NOTHING;
@@ -662,15 +654,6 @@ INSERT INTO csu_right (right_id, right_name, right_type, rw_type, right_data) VA
 INSERT INTO csu_right (right_id, right_name, right_type, rw_type, right_data) VALUES ('renew_pg_bin_info', '更新PG的软件版本路径等信息', 1, 1, NULL) ON CONFLICT DO NOTHING;
 DELETE FROM csu_right WHERE right_id='';
 
-
-DELETE FROM csu_role_right WHERE right_id='cvault/check_path_is_dir';
-DELETE FROM csu_right WHERE right_id='cvault/check_path_is_dir';
-
-DELETE FROM csu_role_right WHERE right_id='cvault/check_os_user_exists';
-DELETE FROM csu_right WHERE right_id='cvault/check_os_user_exists';
-
-DELETE FROM csu_right WHERE right_id='cvault/check_is_pg_bin_path';
-DELETE FROM csu_role_right WHERE right_id='cvault/check_is_pg_bin_path';
 
 INSERT INTO csu_right (right_id, right_name, right_type, rw_type, right_data) VALUES ('get_pg_bin_path_list', '获得PG软件的目录列表', 1, 0, NULL) ON CONFLICT DO NOTHING;
 
@@ -935,132 +918,7 @@ INSERT INTO clup_settings (key, content, category, val_type, describe) VALUES ('
 INSERT INTO clup_settings (key, content, category, val_type, describe) VALUES ('instance_check_interval', 10, 30, 'int(1, 600)', '告警线程的检查周期') ON CONFLICT DO NOTHING;
 
 
-INSERT INTO clup_settings (key, content, category, val_type, describe) VALUES ('support_hotdb' , 1, 99, 'int(0, 1)', '是否支持hotdb的集成') ON CONFLICT DO NOTHING;
-INSERT INTO clup_settings (key, content, category, val_type, describe) VALUES ('hotdb_callback_url', 'http://10.197.169.115:5526/api/rds/pgsql/ip-mark', 99, 'str', '回调url') ON CONFLICT DO NOTHING;
-INSERT INTO clup_settings (key, content, category, val_type, describe) VALUES ('hotdb_callback_key', 'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCDmmoJymMvEBb/YM9n4lSi5IMoBID764l9EtL8ogIK7VeFlUoAXGoRnJAE87LzH4p5QSHgmZJUiZLlmcUF+ujvhC8VTUgUiWuxOmhi6hHnp9rj+O+ePK2RH7QlbVR2X/5pfHaunJrqf43QVZyTECNYQ10WW0+z5N8f21OL9EDC2wIDAQAB', 99, 'str', '回调的验证key') ON CONFLICT DO NOTHING;
-
-
 DELETE FROM  csu_right where right_id in ('do_terminate_basebackup','get_basebackup_log');
-
-
-INSERT INTO csu_right (right_id, right_name, right_type, rw_type, right_data) VALUES ('check_port_is_right', '导入数据库时检查端口与输入的目录是否匹配', 2, 0, NULL) ON CONFLICT DO NOTHING;
-
-
-
--- 把clup_general_task和clup_general_task_log转换成分区表
-DO LANGUAGE plpgsql
-$BODY$
-DECLARE
-  v_relkind text;
-  v_min_create_time timestamptz;
-  v_max_create_time timestamptz;
-  v_curr_tm timestamptz;
-  v_part_ym text;
-  v_begin_ym text;
-  v_end_tm timestamptz;
-  v_end_ym text;
-  v_max_task_id int;
-  v_max_seq int;
-
-BEGIN
-    select relkind into v_relkind from pg_class where relname='clup_general_task';
-    IF v_relkind != 'p' THEN
-        -- 普通表改名
-        ALTER TABLE clup_general_task RENAME TO clup_general_task_old;
-        ALTER INDEX IF EXISTS clup_general_task_pkey RENAME TO clup_general_task_old_pkey;
-        ALTER SEQUENCE clup_general_task_task_id_seq RENAME TO clup_general_task_old_task_id_seq;
-        -- 建分区表
-        CREATE TABLE IF NOT EXISTS clup_general_task
-        (
-            task_id     serial,
-            state       integer,
-            task_type   varchar(50),
-            task_name   varchar(100),
-            task_data   jsonb,
-            create_time timestamptz default now(),
-            last_msg    text,
-            PRIMARY KEY(task_id, create_time)
-        ) PARTITION BY RANGE (create_time);
-        COMMENT ON TABLE clup_general_task is '通用任务表';
-        COMMENT ON COLUMN clup_general_task.state is '任务状态：0:执行中, 1:成功， -1: 失败';
-
-        -- 建分区
-        select max(task_id), min(create_time),max(create_time) into v_max_task_id, v_min_create_time, v_max_create_time from clup_general_task_old;
-        if v_min_create_time is null then
-            v_min_create_time := now();
-            v_max_create_time := now();
-        end if;
-        v_curr_tm := date_trunc('month', v_min_create_time);
-        LOOP
-            v_part_ym := to_char(date_trunc('month', v_curr_tm), 'yyyymm');
-            v_begin_ym := to_char(date_trunc('month', v_curr_tm), 'yyyy-mm-dd');
-            v_end_tm := date_trunc('month', v_curr_tm + interval '1 months');
-            v_end_ym := to_char(v_end_tm, 'yyyy-mm-dd');
-
-            execute format(
-                $SQL$
-                CREATE TABLE clup_general_task_%s PARTITION OF clup_general_task
-            FOR VALUES FROM ('%s') TO ('%s');
-            $SQL$, v_part_ym, v_begin_ym, v_end_ym);
-            EXIT when v_end_tm > v_max_create_time;
-            v_curr_tm := v_curr_tm + interval '1 months';
-        END LOOP;
-
-        INSERT INTO clup_general_task(task_id,state,task_type,task_name, task_data, create_time, last_msg)
-        select task_id,state,task_type,task_name, task_data, create_time, last_msg from clup_general_task_old;
-
-        perform setval('clup_general_task_task_id_seq'::regclass, v_max_task_id);
-
-    END IF;
-
-
-    select relkind into v_relkind from pg_class where relname='clup_general_task_log';
-    IF v_relkind != 'p' THEN
-        ALTER TABLE clup_general_task_log rename to clup_general_task_log_old;
-        ALTER INDEX IF EXISTS clup_general_task_log_pkey RENAME TO clup_general_task_log_old_pkey;
-        ALTER SEQUENCE clup_general_task_log_seq_seq RENAME TO clup_general_task_log_old_seq_seq;
-
-        CREATE TABLE IF NOT EXISTS clup_general_task_log
-        (
-            seq         serial,
-            task_id     integer,
-            log_level   integer,
-            log         text,
-            create_time timestamptz default now(),
-            PRIMARY KEY(seq, create_time)
-        ) PARTITION BY RANGE (create_time);
-
-        select max(seq), min(create_time),max(create_time) into v_max_seq, v_min_create_time, v_max_create_time from clup_general_task_log_old;
-        if v_min_create_time is null then
-            v_min_create_time := now();
-            v_max_create_time := now();
-        end if;
-        v_curr_tm := date_trunc('month', v_min_create_time);
-        LOOP
-            v_part_ym := to_char(date_trunc('month', v_curr_tm), 'yyyymm');
-            v_begin_ym := to_char(date_trunc('month', v_curr_tm), 'yyyy-mm-dd');
-            v_end_tm := date_trunc('month', v_curr_tm + interval '1 months');
-            v_end_ym := to_char(v_end_tm, 'yyyy-mm-dd');
-
-            execute format(
-                $SQL$
-                CREATE TABLE clup_general_task_log_%s PARTITION OF clup_general_task_log
-            FOR VALUES FROM ('%s') TO ('%s');
-            $SQL$, v_part_ym, v_begin_ym, v_end_ym);
-            EXIT when v_end_tm > v_max_create_time;
-            v_curr_tm := v_curr_tm + interval '1 months';
-        END LOOP;
-
-        INSERT INTO clup_general_task_log(seq,task_id,log_level,log, create_time)
-          select seq,task_id,log_level,log, create_time from clup_general_task_log_old;
-
-        perform setval('clup_general_task_log_seq_seq'::regclass, v_max_seq);
-
-    END IF;
-
-END
-$BODY$;
-
 
 
 DO LANGUAGE plpgsql
@@ -1108,29 +966,13 @@ CREATE TABLE IF NOT EXISTS check_task_info(
 );
 
 DELETE FROM clup_settings WHERE key = 'session_expired_secs';
-DELETE FROM clup_settings WHERE key = 'support_hotdb';
-DELETE FROM clup_settings WHERE key = 'hotdb_callback_url';
-DELETE FROM clup_settings WHERE key = 'hotdb_callback_key';
-
-
-INSERT INTO csu_right (right_id, right_name, right_type, rw_type, right_data) VALUES ('cluster_resource_allocation', '集群分配接口', 1, 1, NULL) ON CONFLICT DO NOTHING;
-INSERT INTO csu_right (right_id, right_name, right_type, rw_type, right_data) VALUES ('db_resource_allocation', '非集群数据库分配接口', 1, 1, NULL) ON CONFLICT DO NOTHING;
-INSERT INTO csu_right (right_id, right_name, right_type, rw_type, right_data) VALUES ('get_user_cluster_and_db', '获取集群和非集群数据库', 1, 1, NULL) ON CONFLICT DO NOTHING;
 
 
 INSERT INTO csu_right (right_id, right_name, right_type, rw_type, right_data) VALUES ('get_general_task_state', '获取任务状态', 1, 1, NULL) ON CONFLICT DO NOTHING;
 
-
-INSERT INTO clup_settings (key, content, category, val_type, describe) VALUES ('esdisk_check_interval', 10, 40, 'int(1, 600)', 'esdisk自动修复线程的检查周期') ON CONFLICT DO NOTHING;
-COMMENT ON COLUMN clup_settings.category is '0: 内部使用的配置项不在界面中显示(category的值小于10都不显示), 10: clup自身配置, 20: HA高可用的配置, 30: 监控告警, 40: esdisk配置, 99: 其它参数';
-
-
 INSERT INTO csu_right (right_id, right_name, right_type, rw_type, right_data) VALUES ('check_the_dir_is_empty', '检查数据目录是否为空', 1, 1, NULL) ON CONFLICT DO NOTHING;
 
-
-INSERT INTO csu_right (right_id, right_name, right_type, rw_type, right_data) VALUES ('get_host_for_agent_log', '查询agent主机列表用于日志查询', 1, 1, NULL) ON CONFLICT DO NOTHING;
 INSERT INTO csu_right (right_id, right_name, right_type, rw_type, right_data) VALUES ('check_pgdata_is_used', '检查数据目录是否被同主机数据库使用', 1, 1, NULL) ON CONFLICT DO NOTHING;
-INSERT INTO csu_right (right_id, right_name, right_type, rw_type, right_data) VALUES ('update_agent_conf', '批量更新agnet配置中的server_address', 1, 1, NULL) ON CONFLICT DO NOTHING;
 
 -- csu_right.right_id: get_clup_status
 UPDATE csu_right
@@ -1168,10 +1010,6 @@ WHERE right_id = 'get_cluster_host_list';
 UPDATE csu_right
 SET right_data = '{"desc_cn": "创建流复制集群", "desc_en": "To create a streaming replication cluster."}'
 WHERE right_id = 'create_sr_cluster';
--- csu_right.right_id: add_sr_cluster
-UPDATE csu_right
-SET right_data = '{"desc_cn": "增加基于流复制的PG集群", "desc_en": "To add a PostgreSQL cluster based on streaming replication."}'
-WHERE right_id = 'add_sr_cluster';
 -- csu_right.right_id: delete_cluster
 UPDATE csu_right
 SET right_data = '{"desc_cn": "删除PG集群", "desc_en": "Delete PG cluster."}'
@@ -1392,14 +1230,6 @@ WHERE right_id = 'get_db_relation';
 UPDATE csu_right
 SET right_data = '{"desc_cn": "探测clup是否正常的接口", "desc_en": "The interface to check the status of Clup is by using the Clup API to determine its health."}'
 WHERE right_id = 'basic_test_api';
--- csu_right.right_id: get_agent_package_list
-UPDATE csu_right
-SET right_data = '{"desc_cn": "获得agent升级包列表", "desc_en": "Retrieve the list of agent upgrade packages."}'
-WHERE right_id = 'get_agent_package_list';
--- csu_right.right_id: upgrade_agent
-UPDATE csu_right
-SET right_data = '{"desc_cn": "升级agent", "desc_en": "Upgrade the agent."}'
-WHERE right_id = 'upgrade_agent';
 -- csu_right.right_id: remove_host
 UPDATE csu_right
 SET right_data = '{"desc_cn": "移除指定IP的主机", "desc_en": "Remove the host with the specified IP."}'
@@ -1440,10 +1270,6 @@ WHERE right_id = 'get_pg_bin_path_list';
 UPDATE csu_right
 SET right_data = '{"desc_cn": "根据任务大类(ha、数据库管理)获得任务小类", "desc_en": "Retrieve the subcategories of tasks based on the major category (HA, database management)."}'
 WHERE right_id = 'get_task_type_list_by_class';
--- csu_right.right_id: check_port_is_right
-UPDATE csu_right
-SET right_data = '{"desc_cn": "导入数据库时检查端口与输入的目录是否匹配", "desc_en": "Retrieve the list of recovery records."}'
-WHERE right_id = 'check_port_is_right';
 -- csu_right.right_id: check_shared_disk
 UPDATE csu_right
 SET right_data = '{"desc_cn": "检测共享磁盘与目录", "desc_en": "Check the shared disk and directory."}'
@@ -1476,10 +1302,6 @@ WHERE right_id = 'get_db_settings';
 UPDATE csu_right
 SET right_data = '{"desc_cn": "获取修改配置文件时数据库所有的category分类", "desc_en": "Retrieve all category classifications for the database when modifying the configuration file."}'
 WHERE right_id = 'get_all_setting_category';
--- csu_right.right_id: hotdb_encrypt
-UPDATE csu_right
-SET right_data = '{"desc_cn": "hotdb加密接口", "desc_en": "HotDB encryption interface."}'
-WHERE right_id = 'hotdb_encrypt';
 -- csu_right.right_id: check_the_dir_is_empty
 UPDATE csu_right
 SET right_data = '{"desc_cn": "检查数据目录是否为空", "desc_en": "Check if the data directory is empty."}'

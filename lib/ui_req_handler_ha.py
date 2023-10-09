@@ -43,7 +43,6 @@ import pg_helpers
 import polar_lib
 import rpc_utils
 import task_type_def
-import yaml
 
 
 def get_cluster_list(req):
@@ -222,37 +221,6 @@ def get_cluster_db_list(req):
             dao.update_db_state(db_dict['db_id'], database_state.FAULT)
             continue
         rpc = err_msg
-        # 如果是patroni集群重新获取集群内的主备关系
-        if cluster_type == 21:
-            patroni_yaml_path = db_dict['patroni_yaml_path']
-            status_code, yaml_data = rpc.file_read(patroni_yaml_path)
-            if status_code == -1:
-                return 400, f'get host({db_dict["host"]}) patroni yaml information failure!'
-            yaml_result = yaml.load(yaml_data, Loader=yaml.FullLoader)
-            patroni_connect_address = yaml_result['restapi']['connect_address']
-            cluster_cmd = f"curl -s http://{patroni_connect_address}/cluster"
-            err_code, err_msg, out_msg = rpc.run_cmd_result(cluster_cmd)
-            if err_code != 0:
-                db_dict['is_primary'] = 0
-            else:
-                msg_dict = json.loads(out_msg)
-                primary_db_id = 0
-                for node in msg_dict['members']:
-                    if db_dict['host'] == node['host']:
-                        if node['role'] == 'leader':
-                            db_dict['is_primary'] = 1
-                            primary_db_id = db_dict['db_id']
-                            sql = """ UPDATE clup_db SET is_primary= %s WHERE db_id = %s"""
-                            dbapi.execute(sql, (1, db_dict['db_id']))
-                            sql = """ UPDATE clup_db SET up_db_id = null WHERE db_id = %s"""
-                            dbapi.execute(sql, (db_dict['db_id'], ))
-                        else:
-                            db_dict['is_primary'] = 0
-                            sql = """ UPDATE clup_db SET is_primary= %s WHERE db_id = %s"""
-                            dbapi.execute(sql, (0, db_dict['db_id']))
-                if primary_db_id != 0:
-                    sql = """ UPDATE clup_db SET up_db_id= %s WHERE cluster_id = %s and is_primary = 0"""
-                    dbapi.execute(sql, (primary_db_id, cluster_id))
 
         try:
             err_code, is_run = pg_db_lib.is_running(rpc, db_dict['pgdata'])

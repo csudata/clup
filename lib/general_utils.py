@@ -99,36 +99,7 @@ def upload_file(host, file_name, tar_file_name, block_size=524288):
     return 0, ''
 
 
-def get_agent_package_list():
-    """
-    获取路径下所有文件
-    """
-    packpage_path = config.get('agent_packages_path', '/opt/agent_packages')
-    if not os.path.exists(packpage_path):
-        return -1, f'Directory({packpage_path}) not found.'
-    file_name_list = os.listdir(packpage_path)
-    if len(file_name_list) == 0:
-        return -1, f'Directory({packpage_path}) is empty.'
-    ret = []
-    for file_name in file_name_list:
-        f = {}
-        abs_dir = os.path.join(packpage_path, file_name)
-        if os.path.isdir(abs_dir):
-            continue
-        f['file_path'] = abs_dir
-        f['file_name'] = file_name
-        f['upload_path'] = '/opt'
-        if tarfile.is_tarfile(abs_dir):
-            f['tar_path'] = '/opt'
-        ret.append(f)
-    return 0, ret
-
-
 if __name__ == '__main__':
     pass
     # config.reload()
     # host = '10.197.170.14'
-    # print(update_agent(host, '/opt/clup-agent3.10.2.tar.xz'))
-    # print(upload_file(host, '/opt/python3.6.tar'))
-    # print(rpc_utils.os_read_file(host, '/opt/clup-agent/conf/clup-agent.conf'))
-    # print(rpc_utils.get_agent_version(host))

@@ -1676,46 +1676,6 @@ def check_pg_extensions_is_installed(req):
         return 200, json.dumps({"err_code": 0, "err_msg": ""})
 
 
-def check_port_is_right(req):
-    """
-    检查输入的端口是否正确
-    """
-    param = {
-        "host": csu_http.MANDATORY,
-        "pgdata": csu_http.MANDATORY,
-        "port": csu_http.MANDATORY | csu_http.INT,
-    }
-    code_msg, pdict = csu_http.parse_parms(param, req)
-    if code_msg != 0:
-        return 400, pdict
-
-    try:
-        rpc = None
-        err_code, err_msg = rpc_utils.get_rpc_connect(pdict['host'])
-        if err_code != 0:
-            return 200, json.dumps({"err_code": -1, "err_msg": err_msg})
-        rpc = err_msg
-        postmaster_file = f"{pdict['pgdata']}/postmaster.pid"
-        if not rpc.os_path_exists(postmaster_file):
-            return 200, json.dumps({"err_code": -1, "err_msg": "Please check whether the database is started."})
-        file_size = rpc.get_file_size(postmaster_file)
-        if file_size < 0:
-            return 200, json.dumps({"err_code": -1, "err_msg": f'Failed to get the file size:(file_name={postmaster_file})'})
-
-        err_code, err_msg = rpc.os_read_file(postmaster_file, 0, file_size)
-        if err_code != 0:
-            return 200, json.dumps({"err_code": -1, "err_msg": f'Failed to obtain the file content:(file_name={postmaster_file})'})
-        lines = err_msg.decode().split('\n')
-        if lines[3] != str(pdict['port']):
-            return 200, json.dumps({"err_code": -1, "err_msg": f"The port {pdict['port']} does not match the data directory {pdict['pgdata']}, please check if it is correct."})
-    except Exception as e:
-        return 200, json.dumps({"err_code": -1, "err_msg": str(e)})
-    finally:
-        if rpc:
-            rpc.close()
-    return 200, json.dumps({"err_code": 0, "err_msg": ''})
-
-
 def check_the_dir_is_empty(req):
     """
     判断数据目录是否为空,返回1为空,0为非空,-1为检查出错

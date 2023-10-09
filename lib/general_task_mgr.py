@@ -40,7 +40,7 @@ HA_TASK = 3
 
 def get_task_type_list_by_class(class_type: int) -> list:
     if class_type == 1:
-        return [task_type_def.UPDATE_AGENT, task_type_def.UPDATE_AGENT_CONF, task_type_def.PG_BUILD_STANDBY_TASK, task_type_def.PG_CREATE_INSTANCE_TASK]
+        return [task_type_def.PG_BUILD_STANDBY_TASK, task_type_def.PG_CREATE_INSTANCE_TASK]
     elif class_type == 2:
         return [task_type_def.PG_FULL_BACKUP_TASK, task_type_def.PG_RECOVERY_TASK, task_type_def.PG_COMMON_BACKUP_TASK]
     elif class_type == 3:
