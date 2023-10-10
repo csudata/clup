@@ -12,3 +12,5 @@
 tar xf csupy3.9.16.el7.tar.xz
 ```
 
+## 部署文档
+[快速安装](https://www.csudata.com/clup/manual/5.x/10147)
