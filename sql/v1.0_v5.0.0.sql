@@ -892,14 +892,8 @@ COMMENT ON COLUMN clup_settings.describe is '描述';
 update clup_settings set category=10 where key='pg_bin_path_string';
 
 INSERT INTO clup_settings (key, content, category, val_type, describe) VALUES ('pg_bin_path_string', '/usr/csupg-*/bin,/usr/pgsql-*/bin', 10, 'str', 'PostgreSQL软件的目录') ON CONFLICT DO NOTHING;
-INSERT INTO clup_settings (key, content, category, val_type, describe) VALUES ('session_expired_secs', 600, 10, 'int(10, 604800)', 'web前端页面无操作后的失效时间') ON CONFLICT DO NOTHING;
-INSERT INTO clup_settings (key, content, category, val_type, describe) VALUES ('agent_packages_path', '/opt/agent_packages', 10, 'str', 'agent的升级包放的目录') ON CONFLICT DO NOTHING;
-INSERT INTO clup_settings (key, content, category, val_type, describe) VALUES ('clup_cluster_failed_retry_cnt', 10, 10, 'int(1, 10000000)', '容灾三节点clup的情况下，检测clup自己的失败次数') ON CONFLICT DO NOTHING;
-INSERT INTO clup_settings (key, content, category, val_type, describe) VALUES ('clup_elect_interval', 10, 10,'int(5, 600)', '容灾三节点clup选举的周期') ON CONFLICT DO NOTHING;
+INSERT INTO clup_settings (key, content, category, val_type, describe) VALUES ('agent_packages_path', '/opt/agent_packages', 10, 'str', 'agent的升级包存放的目录') ON CONFLICT DO NOTHING;
 INSERT INTO clup_settings (key, content, category, val_type, describe) VALUES ('debug_sql', 0, 10, 'int(0,1)', '日志中是否输出执行的SQL') ON CONFLICT DO NOTHING;
-INSERT INTO clup_settings (key, content, category, val_type, describe) VALUES ('clup_check_interval', 60, 10, 'int(5, 3600)', '容灾三节点clup中某个clup检查另两个clup的http服务是否正常的检查周期') ON CONFLICT DO NOTHING;
-INSERT INTO clup_settings (key, content, category, val_type, describe) VALUES ('clup_cluster_lock_ttl', 600, 10, 'int(5, 3600)', '容灾三节点clup选举锁的ttl时间') ON CONFLICT DO NOTHING;
-INSERT INTO clup_settings (key, content, category, val_type, describe) VALUES ('clup_cluster_lock_ttl', 600, 10, 'int(5, 3600)', '容灾三节点clup选举锁的ttl时间') ON CONFLICT DO NOTHING;
 
 INSERT INTO clup_settings (key, content, category, val_type, describe) VALUES ('probe_island_ip', null, 20, 'str', '检测是否是自己变成了孤岛的检测IP') ON CONFLICT DO NOTHING;
 INSERT INTO clup_settings (key, content, category, val_type, describe) VALUES ('lock_ttl', 120, 20, 'int(30, 3600)', '参数指定HA锁的存活的最长时间') ON CONFLICT DO NOTHING;
@@ -907,15 +901,6 @@ INSERT INTO clup_settings (key, content, category, val_type, describe) VALUES ('
 INSERT INTO clup_settings (key, content, category, val_type, describe) VALUES ('db_cluster_change_check_interval', 10, 20, 'int(1, 3600)', '检查集群的变动的周期') ON CONFLICT DO NOTHING;
 INSERT INTO clup_settings (key, content, category, val_type, describe) VALUES ('sr_ha_check_interval', 10, 20, 'int(1, 3600)',  '流复制集群是否健康的检查周期') ON CONFLICT DO NOTHING;
 INSERT INTO clup_settings (key, content, category, val_type, describe) VALUES ('sd_ha_check_interval', 10, 20, 'int(1, 3600)', '共享盘集群是否健康的检查周期') ON CONFLICT DO NOTHING;
-
-
-INSERT INTO clup_settings (key, content, category, val_type, describe) VALUES ('stats_interval_secs', 60, 30, 'int(5, 3600)', '采集主机性能数据的周期') ON CONFLICT DO NOTHING;
-INSERT INTO clup_settings (key, content, category, val_type, describe) VALUES ('db_stats_interval_secs', 60, 30, 'int(5, 3600)', '采集数据库性能数据的周期') ON CONFLICT DO NOTHING;
-INSERT INTO clup_settings (key, content, category, val_type, describe) VALUES ('msg_count_conf', 10, 30, 'int(1, 1000)', '相同的报警发送次数，超过这个次数，发送时间间隔msg_interval指向下一级') ON CONFLICT DO NOTHING;
-INSERT INTO clup_settings (key, content, category, val_type, describe) VALUES ('msg_interval', '5, 15, 30, 60', 30, 'str', '相同的报警每发送msg_count_conf次，发送时间间隔就增加到下一个配置') ON CONFLICT DO NOTHING;
-INSERT INTO clup_settings (key, content, category, val_type, describe) VALUES ('clear_months', 1, 30, 'int(1, 600)', '清理多少个月之前的性能数据') ON CONFLICT DO NOTHING;
-INSERT INTO clup_settings (key, content, category, val_type, describe) VALUES ('clear_alarm_months', 5, 30, 'int(1, 600)', '清理多少个月之前的告警历史数据') ON CONFLICT DO NOTHING;
-INSERT INTO clup_settings (key, content, category, val_type, describe) VALUES ('instance_check_interval', 10, 30, 'int(1, 600)', '告警线程的检查周期') ON CONFLICT DO NOTHING;
 
 
 DELETE FROM  csu_right where right_id in ('do_terminate_basebackup','get_basebackup_log');
@@ -942,7 +927,7 @@ INSERT INTO csu_right (right_id, right_name, right_type, rw_type, right_data) VA
 DELETE FROM  clup_settings where key='lock_ttl';
 
 
-INSERT INTO csu_right (right_id, right_name, right_type, rw_type, right_data) VALUES ('get_db_settings', '获得license允许的数据库类型列表', 1, 0, NULL) ON CONFLICT DO NOTHING;
+INSERT INTO csu_right (right_id, right_name, right_type, rw_type, right_data) VALUES ('get_db_settings', '获得数据库的参数列表', 1, 0, NULL) ON CONFLICT DO NOTHING;
 
 
 UPDATE csu_right SET right_name='获得数据库配置信息' WHERE right_id='get_db_settings';
@@ -964,8 +949,6 @@ CREATE TABLE IF NOT EXISTS check_task_info(
     docx_content    bytea,
     html_content    bytea
 );
-
-DELETE FROM clup_settings WHERE key = 'session_expired_secs';
 
 
 INSERT INTO csu_right (right_id, right_name, right_type, rw_type, right_data) VALUES ('get_general_task_state', '获取任务状态', 1, 1, NULL) ON CONFLICT DO NOTHING;

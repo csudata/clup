@@ -538,52 +538,6 @@ class SrHaChecker(threading.Thread):
         logging.info(f"ha cluster({self.cluster_id}) thread stoped")
 
 
-# 基于实例的检查类
-# class InstanceChecker(threading.Thread):
-#     def __init__(self):
-#         threading.Thread.__init__(self, name="health-checker-instance")
-
-#     def run(self):
-#         nex_time = {}  # 用于检查是否达到周期
-#         # 记录上一次流复制的连接数
-#         # pre_replication_num = ''
-#         while not csuapp.is_exit():
-#             probe_interval = int(config.get('instance_check_interval', 10))
-#             begin_time = int(time.time())
-#             # 用于计算线程休眠时间
-#             try:
-#                 instance_alarm_conf_list = dao.get_instance_conf_list()
-#                 cur_time = int(time.time())
-#                 for instance_alarm_conf in instance_alarm_conf_list:
-#                     # 计算周期
-#                     object_id = instance_alarm_conf['object_id']
-#                     obj_type = instance_alarm_conf['obj_type']
-#                     period = instance_alarm_conf['period']
-#                     instance_key = str(object_id) + str(obj_type)
-#                     if instance_key not in nex_time:
-#                         nex_time[instance_key] = cur_time + period
-#                     if nex_time[instance_key] > cur_time:
-#                         # 没有达到周期
-#                         continue
-#                     # 使用db_id区分检测周期
-#                     nex_time[instance_key] = cur_time + period
-#                     instance = []
-#                     # 实例信息
-#                     if obj_type == 'db':
-#                         instance = dao.get_db_info(object_id)
-#                     elif obj_type == 'host':
-#                         instance = dao.get_host_info(object_id)
-
-#             except Exception:
-#                 logging.error(f"Cluster: Unexpected error occurred during check database: {traceback.format_exc()}")
-#             finally:
-#                 last_time = int(time.time())
-#                 sleep_secs = probe_interval - (last_time - begin_time)
-#                 if sleep_secs > 0:
-#                     time.sleep(sleep_secs)
-
-
-
 class ClusterChangeChecker(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self, name="cluster-change-checker")

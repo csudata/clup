@@ -105,6 +105,30 @@ def check_and_gen_handler():
     return ui_api_dict
 
 
+def check_and_start_csumdb():
+    need_start = False
+    db_host = config.get("db_host")
+    db_name = config.get("db_name")
+    db_port = config.get("db_port")
+    db_user = config.get("db_user")
+    db_pass = config.get("db_pass")
+    try:
+        _conn = psycopg2.connect(database=db_name, user=db_user, password=db_pass,
+        host=db_host, port=db_port, connect_timeout=10)
+    except Exception:
+        need_start = True
+    if not need_start:
+        return
+    logging.info("start csumdb...")
+    csumdb_user = "csumdb"
+    start_cmd = f"su - {csumdb_user} -c 'pg_ctl start'"
+    ret_code = os.system(start_cmd)
+    if ret_code == 0:
+        logging.info("csumdb is started.")
+    else:
+        logging.fatal("can not start csumdb, please check and restart clup server!")
+
+
 def start(foreground):
     logging.info("========== CLup starting ==========")
 
@@ -118,6 +142,9 @@ def start(foreground):
     csuapp.prepare_run('clup', foreground)
 
     probe_db.start_service()
+
+    # start csumdb
+    check_and_start_csumdb()
 
     # 启动对外的rpc服务
     service_hander.start()
@@ -220,12 +247,13 @@ def main():
         new_args.append(arg)
     args = parser.parse_args(new_args)
 
-    log_level_dict = {"debug": logging.DEBUG,
-                      "info": logging.INFO,
-                      "warn": logging.WARN,
-                      "error": logging.ERROR,
-                      "critical": logging.CRITICAL,
-                      }
+    log_level_dict = {
+        "debug": logging.DEBUG,
+        "info": logging.INFO,
+        "warn": logging.WARN,
+        "error": logging.ERROR,
+        "critical": logging.CRITICAL,
+    }
 
     str_log_level = args.loglevel.lower()
     if str_log_level not in log_level_dict:
